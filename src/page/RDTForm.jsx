@@ -570,20 +570,14 @@ function RdtBsc() {
     return result;
   })();
 
-  // --- Map Markers
-  const mapMarkers = submissions
-    .filter(
-      (x) =>
-        typeof x.latitude === "number" &&
-        typeof x.longitude === "number" &&
-        !isNaN(x.latitude) &&
-        !isNaN(x.longitude)
-    )
-    .map((x) => ({
-      lat: x.latitude,
-      lng: x.longitude,
-      info: x,
-    }));
+   // MAP data fix
+        const mapMarkers = submissions
+            .filter(x => typeof x.latitude === "number" && typeof x.longitude === "number")
+            .map(x => ({
+                lat: x.latitude,
+                lng: x.longitude,
+                info: x
+            }));
 
   return {
     totalSubmissions: submissions.length,
@@ -655,12 +649,13 @@ function RdtBsc() {
 
     const filterFields = [
         { key: "organization", label: "Organization" },
-        { key: "bednetusepracticeduringsleep", label: "Bednet Use" },
-        { key: "didanydisasteroccurinlast7days", label: "Disaster Last 7 Days" },
-        { key: "presenceofmosquitolarvae", label: "Mosquito Larvae" },
+        // { key: "bednetusepracticeduringsleep", label: "Bednet Use" },
+        // { key: "didanydisasteroccurinlast7days", label: "Disaster Last 7 Days" },
+        // { key: "presenceofmosquitolarvae", label: "Mosquito Larvae" },
         { key: "sex", label: "Gender" },
         { key: "pregnent", label: "Pregnant" },
-        { key: "type_of_species", label: "Species" } 
+        { key: "type_of_species", label: "Species" }, 
+        { key: "racegroup", label: "Ethnicity" } 
     ];
 
     // ---- Filtered Map Points ----
@@ -678,7 +673,7 @@ function RdtBsc() {
         [filteredSubmissions, mapFilterState, filterFields]
     );
 
-    // console.log("filteredMapPoints", filteredMapPoints);
+    console.log("filteredMapPoints", filteredMapPoints);
 
     // Helper function
     function isValidLatLng(lat, lng) {
@@ -931,9 +926,9 @@ function RdtBsc() {
                         <div className="relative w-full h-full min-h-[350px]">
                             {/* Filter Button */}
                             <button
-                            onClick={() => setShowFilter(prev => !prev)}
-                            className="absolute bottom-4 left-4 z-[1200] bg-white border border-gray-200 rounded-lg px-3 py-1.5 
-                            text-xs font-medium shadow-md hover:shadow-lg transition flex items-center gap-1"
+                                onClick={() => setShowFilter(prev => !prev)}
+                                className="absolute bottom-4 left-4 z-[1200] bg-white border border-gray-200 rounded-lg px-3 py-1.5 
+                                text-xs font-medium shadow-md hover:shadow-lg transition flex items-center gap-1"
                             >
                             <FiFilter className="text-gray-600 text-sm" />
                             Filter Map
@@ -942,25 +937,60 @@ function RdtBsc() {
                             {/* Map */}
                             <PatientMap points={filteredMapPoints} />
 
-                            {/* Optional filter modal */}
+
+                            {/* Layer control filter modal */}
                             {showFilter && (
-                            <div className="absolute bottom-16 left-6 z-[1500] bg-white rounded-lg shadow-xl 
-                            p-3 w-[200px] max-h-[60%] overflow-y-auto border border-gray-100">
-                                <h3 className="flex items-center gap-1 font-medium text-xs text-gray-700 mb-2">
-                                <FiFilter className="text-gray-500 text-sm" />
-                                Questions Filter
-                                </h3>
-                                {/* Add filter UI here if needed */}
-                                <div className="flex justify-end mt-2">
-                                <button
-                                    onClick={() => setShowFilter(false)}
-                                    className="bg-red-500 hover:bg-red-600 text-white text-[11px] font-medium 
-                                    px-2 py-1 rounded-md transition"
+                                <div
+                                    className="absolute bottom-16 left-6 z-[1500] bg-white rounded-lg shadow-xl 
+                     p-3 w-[200px] max-h-[60%] overflow-y-auto border border-gray-100"
                                 >
-                                    Close
-                                </button>
+                                    <h3 className="flex items-center gap-1 font-medium text-xs text-gray-700 mb-2">
+                                        <FiFilter className="text-gray-500 text-sm" />
+                                        Questions Filter
+                                    </h3>
+
+                                    {filterFields.map((f) => (
+                                        <div className="mb-2" key={f.key}>
+                                            <label className="text-[11px] font-medium text-gray-600">{f.label}</label>
+                                            {f.key === "facility" ? (
+                                                <select
+                                                    className="mt-0.5 block w-full rounded-md border border-gray-300 bg-gray-50 text-[11px] px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                                    value={mapFilterState.facility || ""}
+                                                    onChange={e => setMapFilterState(prev => ({ ...prev, facility: e.target.value }))}
+                                                >
+                                                    <option value="">All</option>
+                                                    {getFacilityFilterOptions(filteredSubmissions).map(opt => (
+                                                        <option key={opt} value={opt}>{opt}</option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <select
+                                                    className="mt-0.5 block w-full rounded-md border border-gray-300 bg-gray-50 text-[11px] px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                                    value={mapFilterState[f.key] || ""}
+                                                    onChange={e => setMapFilterState(prev => ({ ...prev, [f.key]: e.target.value }))}
+                                                >
+                                                    <option value="">All</option>
+                                                    {getOptions(filteredSubmissions, f.key).map((opt) => (
+                                                        <option key={opt} value={opt}>
+                                                            {opt}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                        </div>
+                                    ))}
+
+
+                                    <div className="flex justify-end mt-2">
+                                        <button
+                                            onClick={() => setShowFilter(false)}
+                                            className="bg-red-500 hover:bg-red-600 text-white text-[11px] font-medium 
+                         px-2 py-1 rounded-md transition"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                             )}
                         </div>
                         </DashboardCard>
@@ -1415,7 +1445,7 @@ function extractHierarchy(submissions) {
                             </text>
                             );
                         }}
-                        labelLine={true}
+                            labelLine={true}
                         >
                         {data.map((entry, index) => (
                             <Cell key={index} fill={colors[index % colors.length]} />
@@ -1747,15 +1777,16 @@ function extractHierarchy(submissions) {
                     ["Organization", pt.organization || "-"],
                     ["Data Collector Name", pt.employee_name || "-"],
                     ["Data Collector Designation", pt.collector_designation || "-"],
+                    ["Source of Infection", pt.case_classification || "-"],
 
-                    ["Bednet Use During Sleep?", pt.bednetusepracticeduringsleep || "-"],
-                    ["Handwashing Practice?", pt.handwashingpracticewithsoapwater || "-"],
-                    ["Latrine Type", pt.typelatrineuse || "-"],
-                    ["Mosquito Larvae", pt.presenceofmosquitolarvae || "-"],
-                    ["Stagnant Water Breeding?", pt.presenceofstagnantwatermosquitobreedingsites || "-"],
+                    // ["Bednet Use During Sleep?", pt.bednetusepracticeduringsleep || "-"],
+                    // ["Handwashing Practice?", pt.handwashingpracticewithsoapwater || "-"],
+                    // ["Latrine Type", pt.typelatrineuse || "-"],
+                    // ["Mosquito Larvae", pt.presenceofmosquitolarvae || "-"],
+                    // ["Stagnant Water Breeding?", pt.presenceofstagnantwatermosquitobreedingsites || "-"],
 
-                    ["Disaster Last 7 Days?", pt.didanydisasteroccurinlast7days || "-"],
-                    ["Disaster Type(s)", Array.isArray(pt.whattypes) ? pt.whattypes.join(", ") : (pt.whattypes || "-")],
+                    // ["Disaster Last 7 Days?", pt.didanydisasteroccurinlast7days || "-"],
+                    // ["Disaster Type(s)", Array.isArray(pt.whattypes) ? pt.whattypes.join(", ") : (pt.whattypes || "-")],
 
                     // ["Diagnosed Dengue", pt.noofalreadydiagnosedcasesofdengueinthehh ?? "-"],
                     // ["Diagnosed Malaria", pt.noofalreadydiagnosedcasesofmalariainthehh ?? "-"],
