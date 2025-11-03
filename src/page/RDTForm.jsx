@@ -478,6 +478,7 @@ function RdtBsc() {
   // --- Case Ratio Pie (species types)
   const caseRatioPie = countBy(submissions, "type_of_species");
 
+
   // --- Severity Pie (if available)
 //   const severityPie = countBy(submissions, "severe_malaria");
 //   const severeCount =
@@ -907,6 +908,7 @@ function RdtBsc() {
                         title="Case Ratio"
                         data={metrics.caseRatioPie || []}
                         colors={["#005fbe", "#FF6361", "#FFB300"]}
+                        stat={(metrics.caseRatioPie || []).reduce((s, d) => s + d.value, 0)}
                     />
 
                     {/* <MultiPieCard
@@ -920,6 +922,7 @@ function RdtBsc() {
                         title="Pregnant"
                         data={metrics.pregnantPie || []}
                         colors={["#005fbe", "#FF6361"]}
+                        stat={`${(metrics.pregnantPie || []).reduce((s, d) => s + d.value, 0)} `}
                     />
 
                     {/* Map Section */}
@@ -1027,7 +1030,7 @@ function RdtBsc() {
                         title="Travel History"
                         data={metrics.travelHistoryPie || []}
                         colors={["#FF6361", "#005fbe"]}
-                        stat={`${(metrics.travelHistoryPie || []).reduce((s, d) => s + d.value, 0)} total`}
+                        stat={`${(metrics.travelHistoryPie || []).reduce((s, d) => s + d.value, 0)} `}
                     />
 
                     <HorizontalBarCard
@@ -1041,11 +1044,11 @@ function RdtBsc() {
                         title="Household Had Malaria in Past Year"
                         data={metrics.hhPastYearPie || []}
                         colors={["#FF6361", "#005fbe"]}
-                        stat={`${(metrics.hhPastYearPie || []).reduce((s, d) => s + d.value, 0)} total`}
+                        stat={`${(metrics.hhPastYearPie || []).reduce((s, d) => s + d.value, 0)}`}
                     />
 
                     <HorizontalBarCard
-                        title="Malaria Occurence/frequency per Household"
+                        title="Malaria Occurence per Household"
                         data={metrics.hhTimesBar || []}
                         colors={["#FF6361", "#3296FA", "#60B76D"]}
                         stat={(metrics.hhTimesBar || []).reduce((s, d) => s + d.value, 0)}
@@ -1053,6 +1056,7 @@ function RdtBsc() {
 
                     <HorizontalBarCard
                         title="Delay Between Onset Fever and Treatment"
+                        titleSize="9px"
                         data={metrics.delayTreatmentBar || []}
                         colors={["#FF6361", "#3296FA", "#60B76D", "#9B59B6"]}
                         stat={(metrics.delayTreatmentBar || []).reduce((s, d) => s + d.value, 0)}
@@ -1169,7 +1173,7 @@ function getUnique(arr) {
     // country_origin: origin.patients_country_of_origin || '',
 
     // --- Patient Info
-    // patient_name: patient.patient_name || '',
+    patient_name: patient.patient_name || '',
     age: patient.age ? String(patient.age).replace(/_$/, '') : '',
     sex: patient.gander || patient.gender || '',
     pregnent: patient.pregnent || '',
@@ -1177,12 +1181,12 @@ function getUnique(arr) {
     occupation: patient.occupation || '',
     // guardians_name: patient.guardians_name || '',
     // nationality: patient.nationality || '',
-    // nid_id: patient.nid_id || '',
-    // occupation: patient.occupation || '',
-    // racegroup: patient.racegroup || '',
-    // weight: patient.weight || '',
-    // phone_number: patient.phone_number || '',
-    // user_identification: patient.user_identification || '',
+    nid_id: patient.nid_id || '',
+    occupation: patient.occupation || '',
+    racegroup: patient.racegroup || '',
+    phone_number: patient.phone_number || '',
+    user_identification: patient.user_identification || '',
+    weight: patient.weight || '',
 
     // --- Case Record Info
     type_of_test: caseRecord.type_of_test || '',
@@ -1221,7 +1225,7 @@ function getUnique(arr) {
     // collector_name: collector.employee_name || '',
     collector_designation: collector.designation_of_data_collector || '',
     organization: collector.name_of_the_organization || '',
-
+    employee_name: collector.employee_name || '',
     // --- Derived for chart use
     positive_status: (caseRecord.types_of_diseases_for_rdt || '').toLowerCase().includes("positive")
       ? "positive"
@@ -1353,7 +1357,7 @@ function extractHierarchy(submissions) {
                     style={{ background: barColor }}
                     className="px-3 py-2 flex items-center justify-between"
                 >
-                    <h3 className="text-base font-bold text-white tracking-tight">
+                    <h3 className="text-base font-bold text-white tracking-tight text-[12px]">
                         {title}
                     </h3>
                     {stat && (
@@ -1373,69 +1377,73 @@ function extractHierarchy(submissions) {
         );
 
 
-
         function PieCard({ title, data, colors, stat }) {
             return (
                 <DashboardCard title={title} stat={stat}>
-                    <div style={{ width: "100%", height: "130%", padding: 20 }}>
+                <div style={{ width: "100%", height: "130%", padding: 20 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                            data={data}
-                            dataKey="value"
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={0}
-                            outerRadius="45%"
-                            label={({ index, name, value, x, y }) => {
-                                // Format the name: remove underscores and capitalize first letter
-                                const formattedName = name
-                                .replace(/_/g, " ") // remove underscores
-                                .replace(/\b\w/g, (char) => char.toUpperCase()); // capitalize each word (or use only first letter if you prefer)
-                                
-                                return (
-                                <text
-                                    x={x}
-                                    y={y}
-                                    fill={colors[index % colors.length]}
-                                    textAnchor="middle"
-                                    dominantBaseline="central"
-                                    fontSize={10} // smaller text
-                                >
-                                    {`${formattedName} (${value})`}
-                                </text>
-                                );
-                            }}
-                            labelLine={true}
+                    <PieChart>
+                        <Pie
+                        data={data}
+                        dataKey="value"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={0}
+                        outerRadius="45%"
+                        label={({ index, name, value, x, y }) => {
+                            // ✅ Format the name:
+                            // 1️⃣ Remove underscores
+                            // 2️⃣ Capitalize each word
+                            // 3️⃣ Keep only first two words
+                            const formattedName = name
+                            ?.replace(/_/g, " ") // remove underscores
+                            ?.replace(/\b\w/g, (c) => c.toUpperCase()) // capitalize each word
+                            ?.split(" ") // split into words
+                            ?.slice(0, 2) // keep only first two
+                            ?.join(" "); // rejoin into a string
+
+                            return (
+                            <text
+                                x={x}
+                                y={y}
+                                fill={colors[index % colors.length]}
+                                textAnchor="middle"
+                                dominantBaseline="central"
+                                fontSize={10} // smaller text
                             >
-                            {data.map((entry, index) => (
-                                <Cell key={index} fill={colors[index % colors.length]} />
-                            ))}
-                            </Pie>
-                            <Tooltip
-                                    contentStyle={{
-                                        fontSize: '10px',     // 👈 reduce text size
-                                        padding: '5px 8px',   // 👈 reduce padding
-                                        borderRadius: '6px',  // rounded corners
-                                        backgroundColor: '#fff',
-                                        border: '1px solid #ccc'
-                                    }}
-                                    itemStyle={{
-                                        fontSize: '10px',     // 👈 size of value lines
-                                    }}
-                                    labelStyle={{
-                                    fontSize: '10px',     // 👈 size of label (title)
-                                    fontWeight: 500
-                                }}
-                            />
-                        </PieChart>
-                        </ResponsiveContainer>
-
-
-                    </div>
+                                {`${formattedName} (${value})`}
+                            </text>
+                            );
+                        }}
+                        labelLine={true}
+                        >
+                        {data.map((entry, index) => (
+                            <Cell key={index} fill={colors[index % colors.length]} />
+                        ))}
+                        </Pie>
+                        <Tooltip
+                        contentStyle={{
+                            fontSize: "10px",
+                            padding: "5px 8px",
+                            borderRadius: "6px",
+                            backgroundColor: "#fff",
+                            border: "1px solid #ccc",
+                        }}
+                        itemStyle={{
+                            fontSize: "10px",
+                        }}
+                        labelStyle={{
+                            fontSize: "10px",
+                            fontWeight: 500,
+                        }}
+                        />
+                    </PieChart>
+                    </ResponsiveContainer>
+                </div>
                 </DashboardCard>
             );
         }
+
 
         function MultiPieCard({ title, data, colors, stat }) {
             return (
@@ -1481,7 +1489,6 @@ function extractHierarchy(submissions) {
         }
 
 
-
         // Bar chart card
         function BarCard({ title, data, colors = ["#005fbe"], stat }) {
             return (
@@ -1509,59 +1516,73 @@ function extractHierarchy(submissions) {
         function HorizontalBarCard({ title, data, colors = ["#005fbe"], stat }) {
             return (
                 <DashboardCard title={title} stat={stat}>
-                    <div className="flex flex-col items-center w-full h-full p-4">
-                        <div style={{ width: "100%", height: 250 }}>
-                            <ResponsiveContainer width="80%" height="80%">
-                                <BarChart
-                                    data={data}
-                                    layout="vertical"
-                                    margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
-                                    barCategoryGap={15}
-                                >
-                                    <XAxis type="number" allowDecimals={false} hide />
-                                    <YAxis dataKey="name" type="category" width={0} tick={false} axisLine={false} />
-                                    <Tooltip
-                                        contentStyle={{
-                                            fontSize: '10px',     // 👈 reduce text size
-                                            padding: '5px 8px',   // 👈 reduce padding
-                                            borderRadius: '6px',  // rounded corners
-                                            backgroundColor: '#fff',
-                                            border: '1px solid #ccc'
-                                        }}
-                                        itemStyle={{
-                                            fontSize: '10px',     // 👈 size of value lines
-                                        }}
-                                        labelStyle={{
-                                            fontSize: '10px',     // 👈 size of label (title)
-                                            fontWeight: 500
-                                        }}
-                                    />
-                                    <Bar dataKey="value" radius={[6, 6, 6, 6]} barSize={28}>
-                                        {data.map((entry, index) => (
-                                            <Cell key={index} fill={colors[index % colors.length]} />
-                                        ))}
-                                        <LabelList dataKey="value" position="insideRight" className="text-xs fill-white" />
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-
-                        {/* Labels */}
-                        <div className="flex flex-wrap justify-center gap-3 mt-1 text-sm">
+                <div className="flex flex-col items-center w-full h-full p-4">
+                    <div style={{ width: "100%", height: 250 }}>
+                    <ResponsiveContainer width="80%" height="80%">
+                        <BarChart
+                        data={data}
+                        layout="vertical"
+                        margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+                        barCategoryGap={15}
+                        >
+                        <XAxis type="number" allowDecimals={false} hide />
+                        <YAxis dataKey="name" type="category" width={0} tick={false} axisLine={false} />
+                        <Tooltip
+                            contentStyle={{
+                            fontSize: "10px",
+                            padding: "5px 8px",
+                            borderRadius: "6px",
+                            backgroundColor: "#fff",
+                            border: "1px solid #ccc",
+                            }}
+                            itemStyle={{
+                            fontSize: "10px",
+                            }}
+                            labelStyle={{
+                            fontSize: "10px",
+                            fontWeight: 500,
+                            }}
+                        />
+                        <Bar dataKey="value" radius={[6, 6, 6, 6]} barSize={28}>
                             {data.map((entry, index) => (
-                                <div key={index} className="flex items-center gap-1">
-                                    <span
-                                        className="w-3 h-3 rounded-sm"
-                                        style={{ backgroundColor: colors[index % colors.length] }}
-                                    />
-                                    <span className="text-[10px]">{entry.name}</span>
-                                </div>
+                            <Cell key={index} fill={colors[index % colors.length]} />
                             ))}
-                        </div>
+                            <LabelList
+                            dataKey="value"
+                            position="insideRight"
+                            className="text-xs fill-white"
+                            />
+                        </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
                     </div>
+
+                    {/* Labels */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-1 text-sm">
+                    {data.map((entry, index) => {
+                        // ✅ Clean and format the name
+                        const formattedName = entry.name
+                        ?.replace(/_/g, " ") // remove underscores
+                        ?.replace(/^(\w)/, (char) => char.toUpperCase()); // capitalize first letter only
+                        // If you want to capitalize EVERY word instead:
+                        // ?.replace(/\b\w/g, (char) => char.toUpperCase());
+
+                        return (
+                        <div key={index} className="flex items-center gap-1">
+                            <span
+                            className="w-3 h-3 rounded-sm"
+                            style={{ backgroundColor: colors[index % colors.length] }}
+                            />
+                            <span className="text-[10px]">{formattedName}</span>
+                        </div>
+                        );
+                    })}
+                    </div>
+                </div>
                 </DashboardCard>
             );
         }
+
 
 
 
@@ -1693,32 +1714,39 @@ function extractHierarchy(submissions) {
                 <tbody>
                 ${[
                     ["Submission Date", pt.day || "-"],
-                    ["Name (Suspected Case)", pt.nameofthepersonwithsuspectedcase || "-"],
+                    ["Name (Patient)", pt.patient_name || "-"],
+                    ["Weight", pt.weight || "-"],
                     ["Age", pt.age || "-"],
                     ["Sex", pt.sex || "-"],
-                    ["Pregnant?", pt.preg || "-"],
-                    ["Phone", pt.mobilenumber || "-"],
-                    ["Disease(s)", Array.isArray(pt.disease) ? pt.disease.join(", ") : (pt.disease || "-")],
-                    ["Suspected Disease?", pt.suspectedinthedisease || "-"],
+                    ["Pregnant?", pt.pregnent || "-"],
+                    ["Phone", pt.phone_number || "-"],
+                    // ["Disease(s)", Array.isArray(pt.disease) ? pt.disease.join(", ") : (pt.disease || "-")],
+                    // ["Suspected Disease?", pt.suspectedinthedisease || "-"],
 
                     ["Division", pt.division || "-"],
                     ["District", pt.district || "-"],
                     ["Upazila", pt.upazila || "-"],
-                    ["Union", pt.union || "-"],
-                    ["Ward", pt.ward || "-"],
+                    // ["Union", pt.union || "-"],
+                    // ["Ward", pt.ward || "-"],
                     ["village", pt.village || "-"],
+                    ["Brac Village", pt.brac_village || "-"],
 
-                    ["Household ID", pt.hhid || "-"],
-                    ["Household Head", pt.hhheadname || "-"],
-                    ["Patient ID Type", pt.patientidtype || "-"],
-
-                    ["Referred?", pt.referred || "-"],
-                    ["Referral Place", normalizeFacility(pt.referralplace)],
-                    ["If referred to govt", pt.ifreferredtogovt || "-"],
-
+                    // ["Household ID", pt.hhid || "-"],
+                    // ["Household Head", pt.hhheadname || "-"],
+                    ["Patient ID Type", pt.user_identification || "-"],
+                    ["Occupation", pt.occupation || "-"],
+                    ["Ethnicity", pt.racegroup || "-"],
+                    // ["NID ID": pt.nid_id || "-"],
+    // occupation: patient.occupation || '',
+    // racegroup: patient.racegroup || '',
+    // phone_number: patient.phone_number || '',
+    // user_identification: patient.user_identification || '',
+                    ["Referred?", pt.the_patient_is_referred || "-"],
+                    ["Referral Place", normalizeFacility(pt.where_is_it_referred_to)],
+                    // ["If referred to govt", pt.ifreferredtogovt || "-"],
                     ["Organization", pt.organization || "-"],
-                    ["Designation", pt.designation || "-"],
-                    ["Staff Name", pt.nameofstaff || "-"],
+                    ["Data Collector Name", pt.employee_name || "-"],
+                    ["Data Collector Designation", pt.collector_designation || "-"],
 
                     ["Bednet Use During Sleep?", pt.bednetusepracticeduringsleep || "-"],
                     ["Handwashing Practice?", pt.handwashingpracticewithsoapwater || "-"],
