@@ -63,7 +63,7 @@ function RdtBsc() {
             try {
                 const token = "083c2aefc3556a592d9ee6a9a03773efe12a013c";
                 const response = await axios.get(
-                    "https://admin2.commicplan.com/api/api/forms/1867/",
+                    "https://admin2.commicplan.com/api/api/forms/1959/",
                     {
                         headers: { Authorization: `Token ${token}` }
                     }
@@ -1181,88 +1181,61 @@ function getUnique(arr) {
     }
     
     // --- Flattened unified structure
-    return {
-        // --- Meta
-        id: x._id || d._id || '',
-        submitted_by: x.meta?.submitted_by || '',
-        submission_type: x.meta?.submission_type || '',
-    date: d.end ? String(d.end).slice(0, 10) : '',
-    day: d.end ? String(d.end).slice(0, 10) : '',
-    start: d.start || '',
-    end: d.end || '',
-    
-    
-    // --- Reporting Site (admin)
-    division: report.division || '',
-    district: report.district || '',
-    upazila: report.upazila || '',
-    union: report.union || '',
-    ward: report.ward || '',
-    brac_village: report.brac_village || '',
-    village: report.village || '',
-    // country_origin: origin.patients_country_of_origin || '',
-
-    // --- Patient Info
-    patient_name: patient.patient_name || '',
-    age: patient.age ? String(patient.age).replace(/_$/, '') : '',
-    sex: patient.gander || patient.gender || '',
-    pregnent: patient.pregnent || '',
-    racegroup: patient.racegroup || '',
-    occupation: patient.occupation || '',
-    // guardians_name: patient.guardians_name || '',
-    // nationality: patient.nationality || '',
-    nid_id: patient.nid_id || '',
-    occupation: patient.occupation || '',
-    racegroup: patient.racegroup || '',
-    phone_number: patient.phone_number || '',
-    user_identification: patient.user_identification || '',
-    weight: patient.weight || '',
-
-    // --- Case Record Info
-    type_of_test: caseRecord.type_of_test || '',
-    type_of_test_facility: caseRecord.type_of_test_facility || '',
-    types_of_diseases_for_rdt: caseRecord.types_of_diseases_for_rdt || '',
-
-    // --- Case Details
-    case_identification: caseDetails.case_identification || '',
-    acd_identification: caseDetails.acd_identification || '',
-    case_classification: caseDetails.case_classification || '',
-    type_of_species: caseDetails.type_of_species || '',
-    date_of_onset_fever: caseDetails.date_of_onset_fever || '',
-    date_of_first_test: caseDetails.date_of_first_test || '',
-    date_of_initiation_of_treatment: caseDetails.date_of_initiation_of_treatment || '',
-    treatment1: caseDetails.treatment1 || '',
-    treatment2: caseDetails.treatment2 || '',
-    the_patient_is_referred: caseDetails.the_patient_is_referred || '',
-    where_is_it_referred_to: caseDetails.where_is_it_referred_to || '',
-    source_of_infection: caseDetails.case_classification || '',
-    general_hospital: caseDetails.general_hospital || '',
-    have_you_or_any_member_of_your_household_had_malaria_in_the_past_year:
-      caseDetails.have_you_or_any_member_of_your_household_had_malaria_in_the_past_year || '',
-    how_many_times: caseDetails.how_many_times || '',
-    used_llin_insecticide_mosquito_repellent_in_last_15_days:
-      caseDetails.used_llin_insecticide_mosquito_repellent_in_last_15_days || '',
-    the_total_number_of_llins_limited_insecticides_in_your_house:
-      caseDetails.the_total_number_of_llins_limited_insecticides_in_your_house || '',
-    latitude,
-    longitude,
-
-    // --- Travel History
-    travel_history: travel.do_the_patient_have_any_travel_history || '',
-    travel_country: travel["if_international__specify_the_last_country_visited."] || '',
-
-    // --- Data Collector
-    // collector_name: collector.employee_name || '',
-    collector_designation: collector.designation_of_data_collector || '',
-    organization: collector.name_of_the_organization || '',
-    employee_name: collector.employee_name || '',
-    // --- Derived for chart use
-    positive_status: (caseRecord.types_of_diseases_for_rdt || '').toLowerCase().includes("positive")
-      ? "positive"
-      : ((caseRecord.types_of_diseases_for_rdt || '').toLowerCase().includes("negative")
-        ? "negative"
-        : "other"),
-  };
+  return {
+    id: d._id || "",
+    date: d.date_of_first_test || d.date || d.start?.slice(0,10) || d.end?.slice(0,10) || "",
+    day: d.date_of_first_test || d.date || d.start?.slice(0,10) || d.end?.slice(0,10) || "",
+    division: d.division || d.division_2 || d.division_2_2 || d.state || "",
+    district: d.district || d.district_2 || d.district_4 || d.district_4_2 || "",
+    upazila: d.upazila || d.upazila_2 || d.upazila_2_2 || d.subdistrict || "",
+    union: d.union || d.union_2 || d.union_2_2 || "",
+    ward: d.ward || d.ward_2 || d.ward_2_2 || d.ward_2_2_2 || "",
+    village: d.village || d.village_2 || d.village_2_2 || d.village_3 || d.village_3_2 || d.village_3_2_2 || "",
+    brac_village: d.brac_village || d.brac_village_2 || d.brac_village_2_2 || "",
+    patient_name: d.patient_name || "",
+    guardians_name: d.guardians_name || "",
+    age: d.age || "",
+    sex: d.gender || d.gander || "",
+    pregnent: d.pregnent || "",
+    racegroup: d.racegroup || "",
+    occupation: d.occupation || "",
+    nid_id: d.nid_id || d.brac_id || "",
+    phone_number: d.phone_number || "",
+    user_identification: d.user_identification || "",
+    weight: d.weight || "",
+    type_of_test: d.type_of_test || d.type_of_test_1 || "",
+    type_of_species: d.type_of_species || "",
+    type_of_test_facility: d.type_of_test_facility || "",
+    types_of_diseases_for_rdt: d.types_of_diseases_for_rdt || "",
+    case_identification: d.case_identification || "",
+    acd_identification: d.acd_identification || "",
+    case_classification: d.case_classification || "",
+    date_of_onset_fever: d.date_of_onset_fever || "",
+    date_of_first_test: d.date_of_first_test || "",
+    date_of_initiation_of_treatment: d.date_of_initiation_of_treatment || "",
+    treatment1: d.treatment1 || "",
+    treatment2: d.treatment2 || "",
+    the_patient_is_referred: d.the_patient_is_referred || "",
+    where_is_it_referred_to: d.where_is_it_referred_to || "",
+    source_of_infection: d.case_classification || "",
+    general_hospital: d.general_hospital || "",
+    have_you_or_any_member_of_your_household_had_malaria_in_the_past_year: d.have_you_or_any_member_of_your_household_had_malaria_in_the_past_year || "",
+    how_many_times: d.how_many_times || "",
+    latitude: d.position_of_the_patient_coordinates_of_the_patient?.split?.(" ")[1] || null,
+    longitude: d.position_of_the_patient_coordinates_of_the_patient?.split?.(" ")[0] || null,
+    travel_history: d.travel_history || d.do_the_patient_have_any_travel_history || "",
+    travel_country: d.patients_country_of_origin || d.if_international__specify_the_last_country_visited || "",
+    collector_designation: d.designation_of_data_collector || "",
+    organization: d.name_of_the_organization || d.organization || "",
+    employee_name: d.employee_name || "",
+    positive_status: (d.types_of_diseases_for_rdt === "positive") ? "positive" : (d.types_of_diseases_for_rdt === "negative") ? "negative" : "other",
+    submission_type: d.meta?.submission_type || "",
+    submitted_by: d.meta?.submitted_by || "",
+    used_llin_insecticide_mosquito_repellent_in_last_15_days: d.used_llin_insecticide_mosquito_repellent_in_last_15_days || "",
+    the_total_number_of_llins_limited_insecticides_in_your_house: d.the_total_number_of_llins_limited_insecticides_in_your_house || "",
+    start: d.start || "",
+    end: d.end || ""
+  }
 }
 
 
@@ -1304,7 +1277,7 @@ function extractHierarchy(submissions) {
   for (const x of submissions || []) {
     const row = flattenSubmission(x);
     if (!row) continue;
-
+ console.log("flattened row -------------------", row);
     // IMPORTANT: use the correct key name
     const {
       division, district, upazila, union, ward,
