@@ -1169,6 +1169,16 @@ function flattenSubmission(x) {
         };
     }
 
+       function getCoordsflat(coordsStr) {
+  // Always check for null, empty string, etc.
+  if (!coordsStr) return { latitude: null, longitude: null };
+  const coords = String(coordsStr).trim().split(" ");
+  return {
+    latitude: coords.length >= 2 ? Number(coords[1]) : null,
+    longitude: coords.length >= 1 ? Number(coords[0]) : null
+  };
+}
+
     if (isGrouped) {
         // Grouped pointers
         const collector = d.data_collector_s_information || {};
@@ -1243,7 +1253,7 @@ function flattenSubmission(x) {
         };
     } else {
         // Flat pointer
-        const { latitude, longitude } = getCoords(d.position_of_the_patient_coordinates_of_the_patient);
+        const { latitude, longitude } = getCoordsflat(d.position_of_the_patient_coordinates_of_the_patient);
 
         return {
             id: d._id || "",
